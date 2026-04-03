@@ -74,6 +74,14 @@ const TESTIMONIALS = [
   },
 ] as const;
 
+const NAV_LINKS = [
+  { href: '#home',         label: 'Home' },
+  { href: '#features',     label: 'Features' },
+  { href: '#case-studies', label: 'Case Studies' },
+  { href: '#about',        label: 'About' },
+  { href: '#contact',      label: 'Contact' },
+] as const;
+
 export default function AutoLeadLandingPage() {
   const [formData, setFormData] = useState<FormData>({
     fullName: '',
@@ -84,6 +92,7 @@ export default function AutoLeadLandingPage() {
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const handleInputChange = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -142,35 +151,67 @@ export default function AutoLeadLandingPage() {
     <div className="min-h-screen bg-black text-white">
       {/* Navbar */}
       <nav className="bg-black border-b border-gray-800 sticky top-0 z-50">
+        {/* Top bar */}
         <div className="flex items-center justify-between px-8 h-[70px]">
+
+          {/* Logo */}
           <div className="text-white font-bold text-2xl font-inter">
             Auto-Lead
           </div>
-          <div className="flex items-center gap-8">
-            <a href="#home" className="text-white text-sm font-medium font-inter hover:opacity-80">
-              Home
-            </a>
-            <a href="#features" className="text-white text-sm font-medium font-inter hover:opacity-80">
-              Features
-            </a>
-            <a href="#case-studies" className="text-white text-sm font-medium font-inter hover:opacity-80">
-              Case Studies
-            </a>
-            <a href="#about" className="text-white text-sm font-medium font-inter hover:opacity-80">
-              About
-            </a>
-            <a href="#contact" className="text-white text-sm font-medium font-inter hover:opacity-80">
-              Contact
-            </a>
+
+          {/* Desktop nav links — hidden below md */}
+          <div className="hidden md:flex items-center gap-8">
+            {NAV_LINKS.map(({ href, label }) => (
+              <a key={href} href={href} className="text-white text-sm font-medium font-inter hover:opacity-80">
+                {label}
+              </a>
+            ))}
           </div>
-          <a
-            href="https://calendar.app.google/yEFeXjLTBecL7XCc6"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="bg-blue-900 hover:bg-blue-800 border border-blue-500 text-white px-6 py-3 rounded text-sm font-semibold font-inter transition inline-flex items-center justify-center"
-          >
-            Book a Free Demo
-          </a>
+
+          {/* Right: CTA (always) + hamburger (mobile only) */}
+          <div className="flex items-center gap-4">
+            <a
+              href="https://calendar.app.google/yEFeXjLTBecL7XCc6"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="bg-blue-900 hover:bg-blue-800 border border-blue-500 text-white px-6 py-3 rounded text-sm font-semibold font-inter transition inline-flex items-center justify-center"
+            >
+              Book a Free Demo
+            </a>
+
+            {/* Hamburger button — mobile only */}
+            <button
+              type="button"
+              onClick={() => setIsMobileMenuOpen((prev) => !prev)}
+              aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
+              aria-expanded={isMobileMenuOpen}
+              aria-controls="mobile-nav"
+              className="md:hidden flex flex-col justify-center items-center gap-[5px] w-8 h-8 focus:outline-none"
+            >
+              <span className={`block h-0.5 w-6 bg-white transition-all duration-300 origin-center ${isMobileMenuOpen ? 'rotate-45 translate-y-[7px]' : ''}`} />
+              <span className={`block h-0.5 w-6 bg-white transition-all duration-300 ${isMobileMenuOpen ? 'opacity-0 scale-x-0' : ''}`} />
+              <span className={`block h-0.5 w-6 bg-white transition-all duration-300 origin-center ${isMobileMenuOpen ? '-rotate-45 -translate-y-[7px]' : ''}`} />
+            </button>
+          </div>
+        </div>
+
+        {/* Mobile dropdown drawer */}
+        <div
+          id="mobile-nav"
+          className={`md:hidden overflow-hidden transition-all duration-300 ease-in-out ${isMobileMenuOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'}`}
+        >
+          <div className="flex flex-col border-t border-gray-800 px-8 py-4 gap-1">
+            {NAV_LINKS.map(({ href, label }) => (
+              <a
+                key={href}
+                href={href}
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="text-white text-sm font-medium font-inter hover:opacity-80 py-3 border-b border-gray-800 last:border-b-0"
+              >
+                {label}
+              </a>
+            ))}
+          </div>
         </div>
       </nav>
 
