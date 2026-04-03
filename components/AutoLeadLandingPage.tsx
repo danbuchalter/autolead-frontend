@@ -84,6 +84,7 @@ export default function AutoLeadLandingPage() {
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formStatus, setFormStatus] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
 
   const handleInputChange = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -98,6 +99,7 @@ export default function AutoLeadLandingPage() {
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setFormStatus(null);
 
     try {
       const response = await fetch('/api/contact', {
@@ -112,10 +114,10 @@ export default function AutoLeadLandingPage() {
 
       if (!response.ok || !data.success) {
         console.error('Contact form submission failed:', data);
-        alert(
-          data?.message ||
-            'Something went wrong while sending your message. Please try again.'
-        );
+        setFormStatus({
+          type: 'error',
+          message: data?.message || 'Something went wrong while sending your message. Please try again.',
+        });
         return;
       }
 
@@ -127,12 +129,16 @@ export default function AutoLeadLandingPage() {
         message: '',
       });
 
-      alert('Your message has been sent. We will respond within 24 hours.');
+      setFormStatus({
+        type: 'success',
+        message: 'Your message has been sent. We will respond within 24 hours.',
+      });
     } catch (error) {
       console.error('Unexpected error submitting contact form:', error);
-      alert(
-        'An unexpected error occurred while sending your message. Please try again later.'
-      );
+      setFormStatus({
+        type: 'error',
+        message: 'An unexpected error occurred while sending your message. Please try again later.',
+      });
     } finally {
       setIsSubmitting(false);
     }
@@ -400,10 +406,16 @@ export default function AutoLeadLandingPage() {
               {isSubmitting ? 'Sending...' : 'Send Message'}
             </button>
 
-            {/* Support Note */}
-            <p className="text-blue-400 text-center font-inter text-xs">
-              Our team will respond within 24 hours
-            </p>
+            {/* Form Status */}
+            {formStatus ? (
+              <p className={`text-center font-inter text-xs ${formStatus.type === 'success' ? 'text-green-400' : 'text-red-400'}`}>
+                {formStatus.message}
+              </p>
+            ) : (
+              <p className="text-blue-400 text-center font-inter text-xs">
+                Our team will respond within 24 hours
+              </p>
+            )}
           </form>
         </div>
       </section>
